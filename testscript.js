@@ -1,39 +1,39 @@
 function mortgageComparison(p1, marketRate = 0.025, marketRateLender = 0.03) {
     
-    const Mortgage = JSON.parse(p1);
+    const mortgage = JSON.parse(p1);
 
-    const periodsRemaining = Mortgage.actualPaymentTerm - (Mortgage.amortizationTerm - Mortgage.effectiveAmortization);
-    const amortPeriodsRemaining = Mortgage.effectiveAmortization;
+    const periodsRemaining = mortgage.actualPaymentTerm - (mortgage.amortizationTerm - mortgage.effectiveAmortization);
+    const amortPeriodsRemaining = mortgage.effectiveAmortization;
 
     const currentMortgage = loanPaymentDetails(
-        Mortgage.balanceRemaining,
-        Mortgage.requestedRate / 100,
+        mortgage.balanceRemaining,
+        mortgage.requestedRate / 100,
         amortPeriodsRemaining,
         periodsRemaining
     );
 
     const breakFees = calculateBreakFees(
-        Mortgage.balanceRemaining,
+        mortgage.balanceRemaining,
         periodsRemaining,
         marketRate,
         marketRateLender
     );
 
     const marketMortgage = loanPaymentDetails(
-        Mortgage.balanceRemaining + breakFees,
+        mortgage.balanceRemaining + breakFees,
         marketRate,
         amortPeriodsRemaining,
-        Mortgage.actualPaymentTerm - (Mortgage.amortizationTerm - Mortgage.effectiveAmortization)
+        mortgage.actualPaymentTerm - (mortgage.amortizationTerm - mortgage.effectiveAmortization)
     );
 
     const output = {
-        CurrentMortgage: currentMortgage,
-        MarketMortgage: marketMortgage,
-        InterestSavings: currentMortgage.TotalInterestPayments - marketMortgage.TotalInterestPayments,
-        PrincipalPaymentInc: marketMortgage.TotalPrincipalPayments - currentMortgage.TotalPrincipalPayments,
-        PrincipalDiff: marketMortgage.EndingPrincipal - currentMortgage.EndingPrincipal,
-        Breakfees: Math.round(breakFees * 100) / 100,
-        PaymentDelta: marketMortgage.MonthlyPayment - currentMortgage.MonthlyPayment
+        currentMortgage: currentMortgage,
+        marketMortgage: marketMortgage,
+        interestSavings: currentMortgage.totalInterestPayments - marketMortgage.totalInterestPayments,
+        principalPaymentInc: marketMortgage.totalPrincipalPayments - currentMortgage.totalPrincipalPayments,
+        principalDiff: marketMortgage.endingPrincipal - currentMortgage.endingPrincipal,
+        breakfees: Math.round(breakFees * 100) / 100,
+        paymentDelta: marketMortgage.monthlyPayment - currentMortgage.monthlyPayment
     };
 
     return JSON.stringify(output);
@@ -61,11 +61,11 @@ function loanPaymentDetails(principal, annualInterestRate, amortPeriods, periods
     }
 
     return {
-        TotalPayments: Math.round(totalPayments * 100) / 100,
-        TotalPrincipalPayments: Math.round(totalPrincipalPayments * 100) / 100,
-        TotalInterestPayments: Math.round(totalInterestPayments * 100) / 100,
-        EndingPrincipal: Math.round(remainingBalance * 100) / 100,
-        MonthlyPayment: monthlyPayment
+        totalPayments: Math.round(totalPayments * 100) / 100,
+        totalPrincipalPayments: Math.round(totalPrincipalPayments * 100) / 100,
+        totalInterestPayments: Math.round(totalInterestPayments * 100) / 100,
+        endingPrincipal: Math.round(remainingBalance * 100) / 100,
+        monthlyPayment: monthlyPayment
     };
 }
 
