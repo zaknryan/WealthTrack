@@ -2,9 +2,6 @@ function mortgageComparison(p1, marketRate = 0.025, marketRateLender = 0.03) {
     
     const Mortgage = JSON.parse(p1);
 
-    //let firstPaymentDate = parseISO(Mortgage.firstPaymentDate);
-    //const startDate = subMonths(firstPaymentDate, 1);
-
     const periodsRemaining = Mortgage.actualPaymentTerm - (Mortgage.amortizationTerm - Mortgage.effectiveAmortization);
     const amortPeriodsRemaining = Mortgage.effectiveAmortization;
 
@@ -32,9 +29,9 @@ function mortgageComparison(p1, marketRate = 0.025, marketRateLender = 0.03) {
     const output = {
         CurrentMortgage: currentMortgage,
         MarketMortgage: marketMortgage,
-        InterestSavings: currentMortgage['Total Interest Payments'] - marketMortgage['Total Interest Payments'],
-        PrincipalPaymentInc: marketMortgage['Total Principal Payments'] - currentMortgage['Total Principal Payments'],
-        PrincipalDiff: marketMortgage['Ending Principal'] - currentMortgage['Ending Principal'],
+        InterestSavings: currentMortgage.TotalInterestPayments - marketMortgage.TotalInterestPayments,
+        PrincipalPaymentInc: marketMortgage.TotalPrincipalPayments - currentMortgage.TotalPrincipalPayments,
+        PrincipalDiff: marketMortgage.EndingPrincipal - currentMortgage.EndingPrincipal,
         Breakfees: Math.round(breakFees * 100) / 100,
         PaymentDelta: marketMortgage.MonthlyPayment - currentMortgage.MonthlyPayment
     };
@@ -64,11 +61,11 @@ function loanPaymentDetails(principal, annualInterestRate, amortPeriods, periods
     }
 
     return {
-        'Total Payments': Math.round(totalPayments * 100) / 100,
-        'Total Principal Payments': Math.round(totalPrincipalPayments * 100) / 100,
-        'Total Interest Payments': Math.round(totalInterestPayments * 100) / 100,
-        'Ending Principal': Math.round(remainingBalance * 100) / 100,
-        'MonthlyPayment': monthlyPayment
+        TotalPayments: Math.round(totalPayments * 100) / 100,
+        TotalPrincipalPayments: Math.round(totalPrincipalPayments * 100) / 100,
+        TotalInterestPayments: Math.round(totalInterestPayments * 100) / 100,
+        EndingPrincipal: Math.round(remainingBalance * 100) / 100,
+        MonthlyPayment: monthlyPayment
     };
 }
 
