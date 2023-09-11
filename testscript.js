@@ -84,4 +84,8 @@ function calculateBreakFees(remainingPrinciple, remainingPeriods, mortgageRate, 
     return breakFees;
 }
 
-return JSON.stringify(mortgageComparison(p1)).slice(1, -1).replace(/\\/g, "")
+mortgageDetails = p1;
+marketRate = p2;
+marketRateLender = p3;
+
+return JSON.stringify(mortgageComparison(mortgageDetails, marketRate, marketRateLender)).slice(1, -1).replace(/\\/g, "")
