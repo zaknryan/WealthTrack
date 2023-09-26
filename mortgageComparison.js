@@ -100,7 +100,7 @@ function calculateBreakFees(remainingPrinciple, remainingPeriods, mortgageRate, 
 }
 
 mortgageDetails = p1;
-marketRates = p2;
+marketRates = JSON.parse(p2);
 marketRateLender = p3/100;
 
 return JSON.stringify(mortgageComparison(mortgageDetails, marketRates, marketRateLender)).slice(1, -1).replace(/\\/g, "");
