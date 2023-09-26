@@ -1,4 +1,4 @@
-function filterRatesByMaturity(interestType, maturityDate, marketRates) {
+function filterRates(interestType, maturityDate, marketRates) {
     // If interest type is not 'Fixed', return null
     if (interestType !== 'Fixed') {
       return null;
@@ -24,4 +24,4 @@ const marketRates = JSON.parse('[' + p3 + ']');
 const interestType = p1;
 const maturityDate = p2;
 
-return JSON.stringify(filterRatesByMaturity(p1,p2,marketRates))
+return JSON.stringify(filterRates(p1,p2,marketRates))
