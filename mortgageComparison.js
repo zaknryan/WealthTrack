@@ -1,4 +1,4 @@
-function mortgageComparison(p1, marketRate = 0.025, marketRateLender = 0.03) {
+function mortgageComparison(p1, marketRates, marketRateLender = 0.03) {
     
     const mortgage = JSON.parse(p1);
 
@@ -100,7 +100,7 @@ function calculateBreakFees(remainingPrinciple, remainingPeriods, mortgageRate, 
 }
 
 mortgageDetails = p1;
-marketRate = p2;
+marketRates = p2;
 marketRateLender = p3/100;
 
-return JSON.stringify(mortgageComparison(mortgageDetails, marketRate, marketRateLender)).slice(1, -1).replace(/\\/g, "")
+return JSON.stringify(mortgageComparison(mortgageDetails, marketRates, marketRateLender)).slice(1, -1).replace(/\\/g, "")
