@@ -18,7 +18,7 @@ function filterRates(interestType, maturityDate, marketRates) {
 
     //Convert Rate to a float
     marketRates.forEach(rate => {
-        rateObj.Rate = parseFloat(rate.Rate);
+        rate.Rate = parseFloat(rate.Rate);
     });
   
     // Filter out rates that are closest to year_to_maturity
