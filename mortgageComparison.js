@@ -22,8 +22,8 @@ function mortgageComparison(p1, marketRates, marketRateLender = 0.03) {
     //Run through each of the market rates and calculate the mortgage details
     const marketMortgages = marketRates.map(rateObj => {
         const loanDetails = loanPaymentDetails(
-            mortgage.balanceRemaining + breakFees,
-            parseFloat(rateObj.Rate),
+            mortgage.balanceRemaining,
+            rateObj.Rate/100,
             amortPeriodsRemaining,
             mortgage.actualPaymentTerm - (mortgage.amortizationTerm - mortgage.effectiveAmortization)
         );
