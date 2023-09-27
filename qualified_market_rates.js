@@ -10,11 +10,13 @@ function filterRates(interestType, maturityDate, marketRates) {
     const yearDifference = targetDate.getFullYear() - currentDate.getFullYear();
     const year_to_maturity = Math.round(yearDifference + (targetDate - new Date(currentDate.getFullYear(), targetDate.getMonth(), targetDate.getDate())) / (365.25 * 24 * 60 * 60 * 1000));
   
-    // Extract term years from the Term property
-    marketRates.forEach(rate => {
-      const match = rate.Term.match(/^(\d+) YR$/);
-      rate.termYears = match ? parseInt(match[1]) : null;
-    });
+  // Extract term years from the Term property and convert Rate to a float, filtering out invalid Rate values
+  marketRates = marketRates.map(rate => {
+    const match = rate.Term.match(/^(\d+) YR$/);
+    rate.termYears = match ? parseInt(match[1]) : null;
+    rate.Rate = parseFloat(rate.Rate);
+    return rate;
+  }).filter(rate => rate.Rate && !isNaN(rate.Rate));
 
     //Convert Rate to a float
     marketRates.forEach(rate => {
