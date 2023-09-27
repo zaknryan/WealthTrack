@@ -21,7 +21,7 @@ function mortgageComparison(p1, marketRates, marketRateLender = 0.03) {
 
     //Run through each of the market rates and calculate the mortgage details
     const marketMortgages = marketRates.map(rateObj => {
-        const loanDetails = loanPaymentDetails(
+        const marketLoanDetails = loanPaymentDetails(
             mortgage.balanceRemaining,
             rateObj.Rate/100,
             amortPeriodsRemaining,
@@ -30,24 +30,22 @@ function mortgageComparison(p1, marketRates, marketRateLender = 0.03) {
     
         return {
             ...rateObj, 
-            ...loanDetails
+            ...marketLoanDetails,
+            interestSavings: currentMortgage.totalInterestPayments - marketLoanDetails.totalInterestPayments,           //Interest savings from moving to this mortgage
+            principalPaymentInc: marketLoanDetails.totalPrincipalPayments - currentMortgage.totalPrincipalPayments,     //Incremental monthly principal payment
+            principalDiff: marketLoanDetails.endingPrincipal - currentMortgage.endingPrincipal,                         //Difference in remaining principal at the end of the current mortgage
+            paymentDelta: marketLoanDetails.monthlyPayment - currentMortgage.monthlyPayment                             //Change in monthly payment (+ive means paying more)
         };
     });
 
     //Find which mortgage has the lowest totalPayments
-    const lowestTotalPayments = marketMortgages.reduce((prev, current) => {
-        return (prev.totalPayments < current.totalPayments) ? prev : current;
-    });
+    lowest = getIndexesOfMinValues(marketMortgages, ['totalPayments','totalInterestPayments','endingPrincipal','monthlyPayment'])
 
     const output = {
         currentMortgage: currentMortgage,
         marketMortgages: marketMortgages,
-        lowestTotalPayments: lowestTotalPayments,
-        interestSavings: currentMortgage.totalInterestPayments - marketMortgages.totalInterestPayments,
-        principalPaymentInc: marketMortgages.totalPrincipalPayments - currentMortgage.totalPrincipalPayments,
-        principalDiff: marketMortgages.endingPrincipal - currentMortgage.endingPrincipal,
+        lowest: lowest,
         breakfees: Math.round(breakFees * 100) / 100,
-        paymentDelta: marketMortgages.monthlyPayment - currentMortgage.monthlyPayment
     };
 
     return JSON.stringify(output);
@@ -98,6 +96,17 @@ function calculateBreakFees(remainingPrinciple, remainingPeriods, mortgageRate, 
 
     return breakFees;
 }
+
+function getIndexesOfMinValues(arr, props) {
+    const indexes = {};
+    props.forEach(prop => {
+      const minValueObj = arr.reduce((prev, current) => {
+        return (prev[prop] < current[prop]) ? prev : current;
+      });
+      indexes[prop] = arr.indexOf(minValueObj);
+    });
+    return indexes;
+  }
 
 mortgageDetails = p1;
 marketRates = JSON.parse(p2);
