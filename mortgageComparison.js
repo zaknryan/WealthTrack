@@ -83,7 +83,10 @@ function loanPaymentDetails(principal, annualInterestRate, amortPeriods, periods
 }
 
 function periodInterestRate(annRate, periodsPerYear, compoundingPeriodsPerYear = 2) {
-    return Math.pow(1 + annRate / compoundingPeriodsPerYear, compoundingPeriodsPerYear / periodsPerYear) - 1;
+    //Calculate effective annual interest rate
+    const effectiveAnnRate = Math.pow(1 + annRate / compoundingPeriodsPerYear, compoundingPeriodsPerYear)-1;
+
+    return Math.pow(1 + effectiveAnnRate, 1 / periodsPerYear) - 1;
 }
 
 function calculateBreakFees(remainingPrinciple, remainingPeriods, mortgageRate, currentRate) {
