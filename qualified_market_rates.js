@@ -23,8 +23,9 @@ function filterRates(interestType, maturityDate, marketRates) {
         rate.Rate = parseFloat(rate.Rate);
     });
   
-    // Filter out rates that are closest to year_to_maturity
-    return marketRates.filter(rate => rate.termYears === year_to_maturity);
+    // Filter out rates that are closest to year_to_maturity 
+    //return marketRates.filter(rate => rate.termYears === year_to_maturity); <- Temporarily commented out
+    return marketRates
   }
 
 const marketRates = JSON.parse('[' + p3 + ']');
