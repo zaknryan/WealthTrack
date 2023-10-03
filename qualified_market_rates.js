@@ -4,7 +4,7 @@ function filterRates(currentMortgage, maturityDate, marketRates) {
     return null;
   }
 
-  const year_to_maturity = Math.round(yearDifference + dayDifference / 365.25);
+  const currentRate = currentMortgage.requestedRate;
   
   // Process and filter marketRates
   marketRates = marketRates.map(rate => {
