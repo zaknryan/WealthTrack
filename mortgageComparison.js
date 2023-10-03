@@ -71,10 +71,13 @@ function loanPaymentDetails(principal, annualInterestRate, amortPeriods, periods
 
     const monthlyPayment = Math.round(principal * (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, amortPeriods)) / (Math.pow(1 + monthlyInterestRate, amortPeriods) - 1)*100)/100;
     
-    let today = new Date();
-    termEndDate = today.setMonth(today.getMonth() + periods);
-    amortEndDate = today.setMonth(today.getMonth() + amortPeriods);
+const today = new Date(); // Today's date
 
+const termEndDate = new Date(today); // Copy today's date to termEndDate
+termEndDate.setMonth(today.getMonth() + periods); // Add X months to termEndDate
+
+const amortEndDate = new Date(today); // Copy today's date to amortEndDate
+amortEndDate.setMonth(today.getMonth() + amortPeriods); // Add Y months to amortEndDate
 
     let totalPayments = 0;
     let totalPrincipalPayments = 0;
@@ -99,8 +102,8 @@ function loanPaymentDetails(principal, annualInterestRate, amortPeriods, periods
         endingPrincipal: Math.round(remainingBalance * 100) / 100,
         monthlyPayment: monthlyPayment,
         interestRate: annualInterestRate,
-        termEndDate: termEndDate.toString(),
-        amortEndDate: amortEndDate.toString()
+        termEndDate: termEndDate.toISOString(),
+        amortEndDate: amortEndDate.toISOString()
     };
 }
 
