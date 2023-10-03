@@ -99,8 +99,8 @@ function loanPaymentDetails(principal, annualInterestRate, amortPeriods, periods
         endingPrincipal: Math.round(remainingBalance * 100) / 100,
         monthlyPayment: monthlyPayment,
         interestRate: annualInterestRate,
-        termEndDate: termEndDate,
-        amortEndDate: amortEndDate
+        termEndDate: termEndDate.toString(),
+        amortEndDate: amortEndDate.toString()
     };
 }
 
