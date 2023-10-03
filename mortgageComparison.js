@@ -2,14 +2,29 @@ function mortgageComparison(p1, marketRates, marketRateLender = 0.03) {
     
     const mortgage = JSON.parse(p1);
 
-    const periodsRemaining = mortgage.actualPaymentTerm - (mortgage.amortizationTerm - mortgage.effectiveAmortization);
-    const amortPeriodsRemaining = mortgage.effectiveAmortization;
+    //const currentPeriodsRemaining = mortgage.actualPaymentTerm - (mortgage.amortizationTerm - mortgage.effectiveAmortization);
+    //const amortPeriodsRemaining = mortgage.effectiveAmortization;
+    let firstPaymentDate = new Date(mortgage.firstPaymentDate);
+    let maturityDate = new Date(mortgage.maturityDate);
+
+    // Calculate startDate
+    let startDate = new Date(firstPaymentDate);
+    startDate.setMonth(startDate.getMonth() - 1); // Set month one month prior
+
+    // Calculate periodsRemaining
+    let today = new Date();
+    let currentPeriodsRemaining = monthDiff(today, maturityDate);
+
+    // Calculate amortPeriodsRemaining
+    let amortPeriodsRemaining = mortgage.amortizationTerm - monthDiff(startDate, today);
+    // Ensure amortPeriodsRemaining is not negative
+    amortPeriodsRemaining = amortPeriodsRemaining <= 0 ? 0 : amortPeriodsRemaining;
 
     const currentMortgage = loanPaymentDetails(
         mortgage.balanceRemaining,
         mortgage.requestedRate / 100,
         amortPeriodsRemaining,
-        periodsRemaining
+        currentPeriodsRemaining
     );
 
     const breakFees = calculateBreakFees(
@@ -25,7 +40,7 @@ function mortgageComparison(p1, marketRates, marketRateLender = 0.03) {
             mortgage.balanceRemaining,
             rateObj.Rate/100,
             amortPeriodsRemaining,
-            mortgage.actualPaymentTerm - (mortgage.amortizationTerm - mortgage.effectiveAmortization)
+            Math.min(rateObj.termYears * 12, currentPeriodsRemaining),
         );
     
         return {
@@ -52,9 +67,16 @@ function mortgageComparison(p1, marketRates, marketRateLender = 0.03) {
 }
 
 function loanPaymentDetails(principal, annualInterestRate, amortPeriods, periods) {
+    //amortPeriods - the number of periods overwhich this remaining balance will be amortized
+    //periods - the number of periods in the mortage deal (ie 5 years with a 25 year amortization)
     const monthlyInterestRate = periodInterestRate(annualInterestRate, 12);
 
     const monthlyPayment = Math.round(principal * (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, amortPeriods)) / (Math.pow(1 + monthlyInterestRate, amortPeriods) - 1)*100)/100;
+    
+    let today = new Date();
+    termEndDate = today.setMonth(today.getMonth() + periods);
+    amortEndDate = today.setMonth(today.getMonth() + amortPeriods);
+
 
     let totalPayments = 0;
     let totalPrincipalPayments = 0;
@@ -78,7 +100,9 @@ function loanPaymentDetails(principal, annualInterestRate, amortPeriods, periods
         totalInterestPayments: Math.round(totalInterestPayments * 100) / 100,
         endingPrincipal: Math.round(remainingBalance * 100) / 100,
         monthlyPayment: monthlyPayment,
-        interestRate: annualInterestRate
+        interestRate: annualInterestRate,
+        termEndDate: termEndDate,
+        amortEndDate: amortEndDate
     };
 }
 
@@ -109,6 +133,15 @@ function getIndexesOfMinValues(arr, props) {
       indexes[prop] = arr.indexOf(minValueObj);
     });
     return indexes;
+  }
+
+// Function to calculate months difference between two dates
+function monthDiff(d1, d2) {
+    var months;
+    months = (d2.getFullYear() - d1.getFullYear()) * 12;
+    months -= d1.getMonth();
+    months += d2.getMonth();
+    return months <= 0 ? 0 : months;
   }
 
 mortgageDetails = p1;

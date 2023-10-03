@@ -1,6 +1,6 @@
-function filterRates(interestType, maturityDate, marketRates) {
+function filterRates(currentMortgage, maturityDate, marketRates) {
     // If interest type is not 'Fixed', return null
-    if (interestType !== 'Fixed') {
+    if (currentMortgage.interestType !== 'Fixed') {
       return null;
     }
   
@@ -9,6 +9,7 @@ function filterRates(interestType, maturityDate, marketRates) {
     const targetDate = new Date(maturityDate);
     const yearDifference = targetDate.getFullYear() - currentDate.getFullYear();
     const year_to_maturity = Math.round(yearDifference + (targetDate - new Date(currentDate.getFullYear(), targetDate.getMonth(), targetDate.getDate())) / (365.25 * 24 * 60 * 60 * 1000));
+    const currentRate = currentMortgage.requestedRate;
   
   // Extract term years from the Term property and convert Rate to a float, filtering out invalid Rate values
   marketRates = marketRates.map(rate => {
@@ -16,7 +17,7 @@ function filterRates(interestType, maturityDate, marketRates) {
     rate.termYears = match ? parseInt(match[1]) : null;
     rate.Rate = parseFloat(rate.Rate);
     return rate;
-  }).filter(rate => rate.Rate && !isNaN(rate.Rate));
+  }).filter(rate => rate.Rate && !isNaN(rate.Rate) && rate.Rate < currentRate);
 
     //Convert Rate to a float
     marketRates.forEach(rate => {
@@ -29,7 +30,7 @@ function filterRates(interestType, maturityDate, marketRates) {
   }
 
 const marketRates = JSON.parse('[' + p3 + ']');
-const interestType = p1;
+const currentMortgage = JSON.parse(p1);
 const maturityDate = p2;
 
-return JSON.stringify(filterRates(p1,p2,marketRates))
+return JSON.stringify(filterRates(currentMortgage,p2,marketRates))
