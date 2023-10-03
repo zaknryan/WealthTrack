@@ -1,36 +1,26 @@
 function filterRates(currentMortgage, maturityDate, marketRates) {
-    // If interest type is not 'Fixed', return null
-    if (currentMortgage.interestType !== 'Fixed') {
-      return null;
-    }
+  // If interest type is not 'Fixed', return null
+  if (currentMortgage.interestTypeDd !== 'Fixed') {
+    return null;
+  }
+
+  const year_to_maturity = Math.round(yearDifference + dayDifference / 365.25);
   
-    // Calculate the year to maturity
-    const currentDate = new Date();
-    const targetDate = new Date(maturityDate);
-    const yearDifference = targetDate.getFullYear() - currentDate.getFullYear();
-    const year_to_maturity = Math.round(yearDifference + (targetDate - new Date(currentDate.getFullYear(), targetDate.getMonth(), targetDate.getDate())) / (365.25 * 24 * 60 * 60 * 1000));
-    const currentRate = currentMortgage.requestedRate;
-  
-  // Extract term years from the Term property and convert Rate to a float, filtering out invalid Rate values
+  // Process and filter marketRates
   marketRates = marketRates.map(rate => {
     const match = rate.Term.match(/^(\d+) YR$/);
     rate.termYears = match ? parseInt(match[1]) : null;
     rate.Rate = parseFloat(rate.Rate);
     return rate;
-  }).filter(rate => rate.Rate && !isNaN(rate.Rate) && rate.Rate < currentRate);
+  }).filter(rate => rate.termYears !== null && !isNaN(rate.Rate) && rate.Rate < currentRate);
 
-    //Convert Rate to a float
-    marketRates.forEach(rate => {
-        rate.Rate = parseFloat(rate.Rate);
-    });
-  
-    // Filter out rates that are closest to year_to_maturity 
-    //return marketRates.filter(rate => rate.termYears === year_to_maturity); <- Temporarily commented out
-    return marketRates
-  }
+  // Filter out rates that are closest to year_to_maturity 
+  return marketRates;
+}
 
+// Parse and call the function
 const marketRates = JSON.parse('[' + p3 + ']');
 const currentMortgage = JSON.parse(p1);
 const maturityDate = p2;
 
-return JSON.stringify(filterRates(currentMortgage,p2,marketRates))
+return JSON.stringify(filterRates(currentMortgage, maturityDate,marketRates));
