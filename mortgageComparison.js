@@ -1,6 +1,4 @@
-function mortgageComparison(p1, marketRates, marketRateLender = 0.03) {
-    
-    const mortgage = JSON.parse(p1);
+function mortgageComparison(mortgage, marketRates, marketRateLender = 0.03) {
 
     //const currentPeriodsRemaining = mortgage.actualPaymentTerm - (mortgage.amortizationTerm - mortgage.effectiveAmortization);
     //const amortPeriodsRemaining = mortgage.effectiveAmortization;
@@ -29,7 +27,7 @@ function mortgageComparison(p1, marketRates, marketRateLender = 0.03) {
 
     const breakFees = calculateBreakFees(
         mortgage.balanceRemaining,
-        periodsRemaining,
+        currentPeriodsRemaining,
         marketRates, // <-- Change here
         marketRateLender
     );
@@ -144,7 +142,7 @@ function monthDiff(d1, d2) {
     return months <= 0 ? 0 : months;
   }
 
-mortgageDetails = p1;
+mortgageDetails = JSON.parse(p1);
 marketRates = JSON.parse(p2);
 marketRateLender = p3/100;
 
