@@ -40,13 +40,15 @@ function mortgageComparison(mortgage, marketRates, marketRateLender = 0.03) {
             amortPeriodsRemaining,
             Math.min(rateObj.termYears * 12, currentPeriodsRemaining),
         );
+
+        const ix = marketLoanDetails.cumulative.InterestPayments.length - 1;
     
         return {
             ...rateObj, 
             ...marketLoanDetails,
-            interestSavings: currentMortgage.totalInterestPayments - marketLoanDetails.totalInterestPayments,           //Interest savings from moving to this mortgage
-            principalPaymentInc: marketLoanDetails.totalPrincipalPayments - currentMortgage.totalPrincipalPayments,     //Incremental monthly principal payment
-            principalDiff: marketLoanDetails.endingPrincipal - currentMortgage.endingPrincipal,                         //Difference in remaining principal at the end of the current mortgage
+            interestSavings: currentMortgage.cumulative.InterestPayments[ix] - marketLoanDetails.cumulative.InterestPayments[ix],           //Interest savings from moving to this mortgage
+            principalPaymentInc: marketLoanDetails.cumulative.PrincipalPayments[ix] - currentMortgage.cumulative.PrincipalPayments[ix],     //Incremental monthly principal payment
+            principalDiff: marketLoanDetails.cumulative.endingPrincipal[ix] - currentMortgage.cumulative.endingPrincipal[ix],                         //Difference in remaining principal at the end of the current mortgage
             paymentDelta: marketLoanDetails.monthlyPayment - currentMortgage.monthlyPayment                             //Change in monthly payment (+ive means paying more)
         };
     });
@@ -71,39 +73,61 @@ function loanPaymentDetails(principal, annualInterestRate, amortPeriods, periods
 
     const monthlyPayment = Math.round(principal * (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, amortPeriods)) / (Math.pow(1 + monthlyInterestRate, amortPeriods) - 1)*100)/100;
     
-const today = new Date(); // Today's date
+    const today = new Date(); // Today's date
+    
+    const termEndDate = new Date(today); // Copy today's date to termEndDate
+    termEndDate.setMonth(today.getMonth() + periods); // Add X months to termEndDate
+    
+    const amortEndDate = new Date(today); // Copy today's date to amortEndDate
+    amortEndDate.setMonth(today.getMonth() + amortPeriods); // Add Y months to amortEndDate
 
-const termEndDate = new Date(today); // Copy today's date to termEndDate
-termEndDate.setMonth(today.getMonth() + periods); // Add X months to termEndDate
-
-const amortEndDate = new Date(today); // Copy today's date to amortEndDate
-amortEndDate.setMonth(today.getMonth() + amortPeriods); // Add Y months to amortEndDate
-
-    let totalPayments = 0;
-    let totalPrincipalPayments = 0;
-    let totalInterestPayments = 0;
+    let cumulativePayments = [];
+    let cumulativePrincipalPayments = [];
+    let cumulativeInterestPayments = [];
+    let remainingBalances = []; // Array to keep track of the remaining balance at each iteration
     let remainingBalance = principal;
-
+    
+    let cumulativeTotalPayments = 0;
+    let cumulativeTotalPrincipalPayments = 0;
+    let cumulativeTotalInterestPayments = 0;
+    
     for (let i = 0; i < periods; i++) {
-        const interestPayment = remainingBalance * monthlyInterestRate;
-        const principalPayment = monthlyPayment - interestPayment;
-
+        let interestPayment = remainingBalance * monthlyInterestRate;
+        let principalPayment = monthlyPayment - interestPayment;
+    
         remainingBalance -= principalPayment;
-
-        totalPayments += monthlyPayment;
-        totalPrincipalPayments += principalPayment;
-        totalInterestPayments += interestPayment;
+    
+        cumulativeTotalPayments += monthlyPayment;
+        cumulativeTotalPrincipalPayments += principalPayment;
+        cumulativeTotalInterestPayments += interestPayment;
+    
+        // Pushing cumulative sums into the arrays at each iteration
+        cumulativePayments.push(cumulativeTotalPayments);
+        cumulativePrincipalPayments.push(cumulativeTotalPrincipalPayments);
+        cumulativeInterestPayments.push(cumulativeTotalInterestPayments);
+        remainingBalances.push(remainingBalance); // Recording the remaining balance at each iteration
     }
 
+    cumulativePayments = cumulativePayments.map(amount => Math.round(amount * 100) / 100);
+    cumulativePrincipalPayments = cumulativePrincipalPayments.map(amount => Math.round(amount * 100) / 100);
+    cumulativeInterestPayments = cumulativeInterestPayments.map(amount => Math.round(amount * 100) / 100);
+    remainingBalances = remainingBalances.map(amount => Math.round(amount * 100) / 100);
+
     return {
-        totalPayments: Math.round(totalPayments * 100) / 100,
-        totalPrincipalPayments: Math.round(totalPrincipalPayments * 100) / 100,
-        totalInterestPayments: Math.round(totalInterestPayments * 100) / 100,
-        endingPrincipal: Math.round(remainingBalance * 100) / 100,
+        totalPayments: cumulativePayments[cumulativePayments.length - 1],
+        totalPrincipalPayments: cumulativePrincipalPayments[cumulativePrincipalPayments.length - 1],
+        totalInterestPayments: totalInterestPayments[totalInterestPayments.length - 1],
+        endingPrincipal: remainingBalances[remainingBalances.length - 1],
         monthlyPayment: monthlyPayment,
         interestRate: annualInterestRate,
         termEndDate: termEndDate.toISOString(),
-        amortEndDate: amortEndDate.toISOString()
+        amortEndDate: amortEndDate.toISOString(),
+        cumulative: {
+            Payments: cumulativePayments,
+            PrincipalPayments: cumulativePrincipalPayments,
+            InterestPayments: cumulativeInterestPayments,
+            remainingBalances: remainingBalances
+        }
     };
 }
 
