@@ -41,7 +41,7 @@ function mortgageComparison(mortgage, marketRates, marketRateLender = 0.03) {
             Math.min(rateObj.termYears * 12, currentPeriodsRemaining),
         );
 
-        const ix = marketLoanDetails.cumulative.InterestPayments.length - 1;
+        let ix = marketLoanDetails.cumulative.InterestPayments.length - 1;
     
         return {
             ...rateObj, 
@@ -116,7 +116,7 @@ function loanPaymentDetails(principal, annualInterestRate, amortPeriods, periods
     return {
         totalPayments: cumulativePayments[cumulativePayments.length - 1],
         totalPrincipalPayments: cumulativePrincipalPayments[cumulativePrincipalPayments.length - 1],
-        totalInterestPayments: totalInterestPayments[totalInterestPayments.length - 1],
+        totalInterestPayments: cumulativeInterestPayments[cumulativeInterestPayments.length - 1],
         endingPrincipal: remainingBalances[remainingBalances.length - 1],
         monthlyPayment: monthlyPayment,
         interestRate: annualInterestRate,
@@ -126,7 +126,7 @@ function loanPaymentDetails(principal, annualInterestRate, amortPeriods, periods
             Payments: cumulativePayments,
             PrincipalPayments: cumulativePrincipalPayments,
             InterestPayments: cumulativeInterestPayments,
-            remainingBalances: remainingBalances
+            endingPrincipal: remainingBalances
         }
     };
 }
