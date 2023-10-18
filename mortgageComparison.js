@@ -1,4 +1,4 @@
-function mortgageComparison(mortgage, marketRates, marketRateLender = 0.03) {
+function mortgageComparison(mortgage, marketRates, marketPrime, marketRateLender = 0.03) {
 
     //const currentPeriodsRemaining = mortgage.actualPaymentTerm - (mortgage.amortizationTerm - mortgage.effectiveAmortization);
     //const amortPeriodsRemaining = mortgage.effectiveAmortization;
@@ -18,9 +18,16 @@ function mortgageComparison(mortgage, marketRates, marketRateLender = 0.03) {
     // Ensure amortPeriodsRemaining is not negative
     amortPeriodsRemaining = amortPeriodsRemaining <= 0 ? 0 : amortPeriodsRemaining;
 
+    // Calculate the current rate used to determine payments
+    if (mortgage.interestTypeDd == 'Fixed'){
+        currentMortageRate = mortgage.requestedRate;
+    } else {
+        currentMortageRate = marketPrime - mortgage.rate.discount + mortgage.rate.premium;
+    }
+
     const currentMortgage = loanPaymentDetails(
         mortgage.balanceRemaining,
-        mortgage.requestedRate / 100,
+        currentMortageRate / 100,
         amortPeriodsRemaining,
         currentPeriodsRemaining
     );
@@ -171,6 +178,7 @@ function monthDiff(d1, d2) {
 
 mortgageDetails = JSON.parse(p1);
 marketRates = JSON.parse(p2);
-marketRateLender = p3/100;
+marketRateLender = 6.5 // p3/100;
+marketPrime = p3; //6.5;
 
-return JSON.stringify(mortgageComparison(mortgageDetails, marketRates, marketRateLender)).slice(1, -1).replace(/\\/g, "");
+return JSON.stringify(mortgageComparison(mortgageDetails, marketRates, marketPrime, marketRateLender)).slice(1, -1).replace(/\\/g, "");
