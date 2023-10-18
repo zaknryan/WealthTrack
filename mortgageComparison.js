@@ -25,12 +25,18 @@ function mortgageComparison(mortgage, marketRates, marketPrime, marketRateLender
         currentMortageRate = marketPrime - mortgage.rate.discount + mortgage.rate.premium;
     }
 
+    // Get loan payment details for current Mortgage
     const currentMortgage = loanPaymentDetails(
         mortgage.balanceRemaining,
         currentMortageRate / 100,
         amortPeriodsRemaining,
         currentPeriodsRemaining
     );
+    currentMortgage.type = mortgage.interestTypeDd;
+    //currentMortgage.amortization = {remainingYears: Math.round(amortPeriodsRemaining/12 * 10)/10,
+   //                                 remainingPeriods: amortPeriodsRemaining};
+   // currentMortgage.remaining = {remainingYears: Math.round(currentPeriodsRemaining/12 * 10)/10,
+   //                                 remainingPeriods: currentPeriodsRemaining};
 
     const breakFees = calculateBreakFees(
         mortgage.balanceRemaining,
@@ -53,6 +59,8 @@ function mortgageComparison(mortgage, marketRates, marketPrime, marketRateLender
         return {
             ...rateObj, 
             ...marketLoanDetails,
+            //remaining: {remainingYears: marketLoanDetails.termYears, 
+            //                remainingPeriods: marketLoanDetails.termYears * 12},
             interestSavings: currentMortgage.cumulative.InterestPayments[ix] - marketLoanDetails.cumulative.InterestPayments[ix],           //Interest savings from moving to this mortgage
             principalPaymentInc: marketLoanDetails.cumulative.PrincipalPayments[ix] - currentMortgage.cumulative.PrincipalPayments[ix],     //Incremental monthly principal payment
             principalDiff: marketLoanDetails.cumulative.endingPrincipal[ix] - currentMortgage.cumulative.endingPrincipal[ix],                         //Difference in remaining principal at the end of the current mortgage
@@ -127,8 +135,16 @@ function loanPaymentDetails(principal, annualInterestRate, amortPeriods, periods
         endingPrincipal: remainingBalances[remainingBalances.length - 1],
         monthlyPayment: monthlyPayment,
         interestRate: annualInterestRate,
-        termEndDate: termEndDate.toISOString(),
-        amortEndDate: amortEndDate.toISOString(),
+        term: {
+            endDate: termEndDate.toISOString(),
+            remainingYears: Math.round(periods / 12 * 10) / 10,
+            remainingPeriods: periods
+        },
+        amortization: {
+            endDate: amortEndDate.toISOString(),
+            remainingYears: Math.round(amortPeriods / 12 * 10) / 10,
+            remainingPeriods: amortPeriods
+        },
         cumulative: {
             Payments: cumulativePayments,
             PrincipalPayments: cumulativePrincipalPayments,
