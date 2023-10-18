@@ -10,7 +10,7 @@ marketRates = marketRates.map(rate => {
     rate.type = match[2] ? "Variable" : "Fixed";
   }
   rate.Rate = parseFloat(rate.Rate);
-  rate.Lender = rate.Lender.replace(/\n/g, '');
+  rate.Lender = rate.Lender.replace(/\n/g, ' ');
   return rate;
 }).filter(rate => rate.termYears !== undefined && !isNaN(rate.Rate) && rate.Rate < currentRate);
 
