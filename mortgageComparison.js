@@ -54,7 +54,7 @@ function mortgageComparison(mortgage, marketRates, marketPrime, marketRateLender
             Math.min(rateObj.termYears * 12, currentPeriodsRemaining),
         );
 
-        let ix = marketLoanDetails.cumulative.InterestPayments.length - 1;
+        let ix = Math.min(marketLoanDetails.cumulative.InterestPayments.length, currentMortgage.cumulative.InterestPayments.length) - 1;
     
         return {
             ...rateObj, 
@@ -64,7 +64,8 @@ function mortgageComparison(mortgage, marketRates, marketPrime, marketRateLender
             interestSavings: currentMortgage.cumulative.InterestPayments[ix] - marketLoanDetails.cumulative.InterestPayments[ix],           //Interest savings from moving to this mortgage
             principalPaymentInc: marketLoanDetails.cumulative.PrincipalPayments[ix] - currentMortgage.cumulative.PrincipalPayments[ix],     //Incremental monthly principal payment
             principalDiff: marketLoanDetails.cumulative.endingPrincipal[ix] - currentMortgage.cumulative.endingPrincipal[ix],                         //Difference in remaining principal at the end of the current mortgage
-            paymentDelta: marketLoanDetails.monthlyPayment - currentMortgage.monthlyPayment                             //Change in monthly payment (+ive means paying more)
+            paymentDelta: marketLoanDetails.monthlyPayment - currentMortgage.monthlyPayment,                             //Change in monthly payment (+ive means paying more)
+            compare_periods: ix + 1
         };
     });
 
