@@ -1,9 +1,11 @@
 function filterRates(currentMortgage, marketRates, currentPrimeRate) {
 
-  if currentMortgage.interestTypeDd == 'Fixed' {
-    const currentRate = currentMortgage.requestedRate;
+  let currentRate;  // Declare currentRate here
+
+  if (currentMortgage.interestTypeDd === "Fixed") {
+    currentRate = currentMortgage.requestedRate;
   } else {
-    const currentRate = currentPrimeRate - currentMortgage.rate.discount + currentMortgage.rate.premium
+    currentRate = currentPrimeRate - currentMortgage.rate.discount + currentMortgage.rate.premium;
   }
   
   const maturityDate = currentMortgage.maturityDate;
@@ -22,11 +24,11 @@ function filterRates(currentMortgage, marketRates, currentPrimeRate) {
   
     // Filter out rates that are closest to year_to_maturity 
     return marketRates;
-  }
+}
   
-  // Parse and call the function
-  const marketRates = JSON.parse('[' + p3 + ']');
-  const currentMortgage = JSON.parse(p1);
-  const currentPrimeRate = p2;
-  
-  return JSON.stringify(filterRates(currentMortgage, marketRates, currentPrimeRate));
+// Parse and call the function
+const marketRates = JSON.parse('[' + p3 + ']');
+const currentMortgage = JSON.parse(p1);
+const currentPrimeRate = p2;
+
+return JSON.stringify(filterRates(currentMortgage, marketRates, currentPrimeRate));
