@@ -51,7 +51,7 @@ function mortgageComparison(mortgage, marketRates, marketPrime, marketRateLender
             mortgage.balanceRemaining,
             rateObj.Rate/100,
             amortPeriodsRemaining,
-            Math.min(rateObj.termYears * 12, currentPeriodsRemaining),
+            rateObj.termYears * 12, currentPeriodsRemaining,
         );
 
         let ix = Math.min(marketLoanDetails.cumulative.InterestPayments.length, currentMortgage.cumulative.InterestPayments.length) - 1;
