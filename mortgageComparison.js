@@ -41,8 +41,8 @@ function mortgageComparison(mortgage, marketRates, marketPrime, marketRateLender
     const estBreakFees = calculateBreakFees(
         mortgage.balanceRemaining,
         currentPeriodsRemaining,
-        currentMortageRate, // <-- Change here
-        marketRateLender
+        currentMortageRate / 100, // <-- Change here
+        marketRateLender / 100
     );
 
     //Run through each of the market rates and calculate the mortgage details
@@ -76,7 +76,7 @@ function mortgageComparison(mortgage, marketRates, marketPrime, marketRateLender
         currentMortgage: currentMortgage,
         marketMortgages: marketMortgages,
         lowest: lowest,
-        estBreakfees: Math.round(estBreakFees * 100) / 100,
+        estBreakFees: Math.round(estBreakFees * 100) / 100,
     };
 
     return JSON.stringify(output);
@@ -162,8 +162,8 @@ function periodInterestRate(annRate, periodsPerYear, compoundingPeriodsPerYear =
     return Math.pow(1 + effectiveAnnRate, 1 / periodsPerYear) - 1;
 }
 
-function calculateBreakFees(remainingPrinciple, remainingPeriods, mortgageRate, currentLenderRate) {
-    const IRD = mortgageRate - currentLenderRate;
+function calculateBreakFees(remainingPrinciple, remainingPeriods, mortgageRate, marketRate) {
+    const IRD = (mortgageRate - marketRate);
     const IRDPeriod = remainingPrinciple * (IRD / 12);
 
     const IRDOwing = IRDPeriod * remainingPeriods;
