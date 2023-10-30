@@ -5,7 +5,9 @@ function filterRates(currentMortgage, marketRates, currentPrimeRate) {
   if (currentMortgage.interestTypeDd === "Fixed") {
     currentRate = currentMortgage.requestedRate;
   } else {
-    currentRate = currentPrimeRate - currentMortgage.rate.discount + currentMortgage.rate.premium;
+    const discount =  currentMortgage.rate.discount || 0;
+    const premium = currentMortgage.rate.premium || 0;
+    currentRate = currentPrimeRate - discount + premium;
   }
   
   const maturityDate = currentMortgage.maturityDate;
