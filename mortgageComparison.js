@@ -199,9 +199,24 @@ function monthDiff(d1, d2) {
     return months <= 0 ? 0 : months;
   }
 
-existingMortgage = JSON.parse(p1);
-marketRates = JSON.parse(p2);
-marketRateLender = 6.5 // p3/100;
-marketPrime = p3; //6.5;
+try {
+  existingMortgage = p1 ? JSON.parse(p1) : undefined;
+  marketRates = p2 ? JSON.parse(p2) : undefined;
+  marketPrime = p3 ? parseFloat(p3) : 6.5; // Assuming p3 is a number in string format.
+  marketRateLender = marketPrime; // Use marketPrime as the default if p3 is defined.
+} catch (error) {
+  console.error("Error parsing JSON input:", error);
+  // Handle the error appropriately, perhaps by returning a message or setting default values.
+}
 
-return JSON.stringify(mortgageComparison(existingMortgage, marketRates, marketPrime, marketRateLender)).slice(1, -1).replace(/\\/g, "");
+// Ensure that the required variables are defined before calling mortgageComparison
+if (existingMortgage && marketRates && typeof marketPrime === 'number') {
+  const comparisonResult = mortgageComparison(existingMortgage, marketRates, marketPrime, marketRateLender);
+  return JSON.stringify(comparisonResult).slice(1, -1).replace(/\\/g, "");
+} else {
+  // Handle the case where the inputs are not defined or valid
+  console.error("Invalid input for mortgage comparison.");
+  // Return an error message or handle it as per your application's error handling policy
+}
+
+return JSON.stringify(mortgageComparison(existingMortgage, marketRates, marketPrime, marketLenderRate)).slice(1, -1).replace(/\\/g, "");
