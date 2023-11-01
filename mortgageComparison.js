@@ -5,8 +5,6 @@ function mortgageComparison(existingMortgage, marketRates, marketPrime, marketRa
         requestedRate: currentMortgageRate,
         interestTypeDd: interestType,
         balanceRemaining,
-        firstPaymentDate,
-        maturityDate,
         mortgage: {
             discount: rateDiscount = 0,   //Default value for discount is 0
             premium: ratePremium = 0    //Default value for discount is 0
@@ -18,8 +16,8 @@ function mortgageComparison(existingMortgage, marketRates, marketPrime, marketRa
     } = existingMortgage
 
     //Set calculated variables based on currentMortgage
-    let firstPaymentDate = new Date(firstPaymentDate);
-    let maturityDate = new Date(maturityDate);
+    let firstPaymentDate = new Date(existingMortgage.firstPaymentDate);
+    let maturityDate = new Date(existingMortgage.maturityDate);
 
     // Calculate startDate
     let startDate = new Date(firstPaymentDate);
