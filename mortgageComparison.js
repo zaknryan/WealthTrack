@@ -1,13 +1,13 @@
 function mortgageComparison(existingMortgage, marketRates, marketPrime, marketRateLender = marketPrime) {
-    //Set variables from properites in currentMortgage
+    // Set variables from properties in currentMortgage
     const {
         amortizationTerm,
         requestedRate: currentMortgageRate,
         interestTypeDd: interestType,
         balanceRemaining,
         mortgage: {
-            discount: rateDiscount = 0,   //Default value for discount is 0
-            premium: ratePremium = 0    //Default value for discount is 0
+            discount: rateDiscount = 0,   // Default value for discount is 0
+            premium: ratePremium = 0      // Default value for premium is 0
         },
         ltv,
         combinedIncome,
@@ -15,7 +15,7 @@ function mortgageComparison(existingMortgage, marketRates, marketPrime, marketRa
         qualifyingTds,
     } = existingMortgage
 
-    //Set calculated variables based on currentMortgage
+    // Set calculated variables based on currentMortgage
     let firstPaymentDate = new Date(existingMortgage.firstPaymentDate);
     let maturityDate = new Date(existingMortgage.maturityDate);
 
@@ -33,26 +33,21 @@ function mortgageComparison(existingMortgage, marketRates, marketPrime, marketRa
     amortPeriodsRemaining = amortPeriodsRemaining <= 0 ? 0 : amortPeriodsRemaining;
 
     // Calculate the current rate used to determine payments
-    if (interestType == 'Fixed'){
-        currentMortageRate = currentMortgageRate;
-    } else {
-        currentMortageRate = marketPrime - rateDiscount + ratePremium;
-    }
+    let currentRate = interestType == 'Fixed' ? currentMortgageRate : marketPrime - rateDiscount + ratePremium;
 
     // Get loan payment details for current Mortgage
     const currentMortgage = loanPaymentDetails(
         balanceRemaining,
-        currentMortageRate / 100,
+        currentRate / 100,
         amortPeriodsRemaining,
         currentPeriodsRemaining
     );
     currentMortgage.type = interestType;
-                            remainingPeriods: currentPeriodsRemaining};
 
     const estBreakFees = calculateBreakFees(
         balanceRemaining,
         currentPeriodsRemaining,
-        currentMortageRate / 100, // <-- Change here
+        currentRate / 100, // <-- Corrected rate variable
         marketRateLender / 100
     );
 
@@ -209,4 +204,4 @@ marketRates = JSON.parse(p2);
 marketRateLender = 6.5 // p3/100;
 marketPrime = p3; //6.5;
 
-return JSON.stringify(mortgageComparison(currentMortgageDetails, marketRates, marketPrime, marketRateLender)).slice(1, -1).replace(/\\/g, "");
+return JSON.stringify(mortgageComparison(existingMortgage, marketRates, marketPrime, marketRateLender)).slice(1, -1).replace(/\\/g, "");
