@@ -5,7 +5,7 @@ function mortgageComparison(existingMortgage, marketRates, marketPrime, marketRa
         requestedRate: currentMortgageRate,
         interestTypeDd: interestType,
         balanceRemaining,
-        mortgage: {
+        rate: {
             discount: rateDiscount = 0,   // Default value for discount is 0
             premium: ratePremium = 0      // Default value for premium is 0
         },
@@ -219,4 +219,4 @@ if (existingMortgage && marketRates && typeof marketPrime === 'number') {
   // Return an error message or handle it as per your application's error handling policy
 }
 
-return JSON.stringify(mortgageComparison(existingMortgage, marketRates, marketPrime, marketLenderRate)).slice(1, -1).replace(/\\/g, "");
+return JSON.stringify(mortgageComparison(existingMortgage, marketRates, marketPrime, marketRateLender)).slice(1, -1).replace(/\\/g, "");
