@@ -1,9 +1,25 @@
-function mortgageComparison(mortgage, marketRates, marketPrime, marketRateLender = marketPrime) {
+function mortgageComparison(existingMortgage, marketRates, marketPrime, marketRateLender = marketPrime) {
+    //Set variables from properites in currentMortgage
+    const {
+        amortizationTerm,
+        requestedRate: currentMortgageRate,
+        interestTypeDd: interestType,
+        balanceRemaining,
+        firstPaymentDate,
+        maturityDate,
+        mortgage: {
+            discount: rateDiscount = 0,   //Default value for discount is 0
+            premium: ratePremium = 0    //Default value for discount is 0
+        },
+        ltv,
+        combinedIncome,
+        qualifyingGds,
+        qualifyingTds,
+    } = existingMortgage
 
-    //const currentPeriodsRemaining = mortgage.actualPaymentTerm - (mortgage.amortizationTerm - mortgage.effectiveAmortization);
-    //const amortPeriodsRemaining = mortgage.effectiveAmortization;
-    let firstPaymentDate = new Date(mortgage.firstPaymentDate);
-    let maturityDate = new Date(mortgage.maturityDate);
+    //Set calculated variables based on currentMortgage
+    let firstPaymentDate = new Date(firstPaymentDate);
+    let maturityDate = new Date(maturityDate);
 
     // Calculate startDate
     let startDate = new Date(firstPaymentDate);
@@ -14,32 +30,29 @@ function mortgageComparison(mortgage, marketRates, marketPrime, marketRateLender
     let currentPeriodsRemaining = monthDiff(today, maturityDate);
 
     // Calculate amortPeriodsRemaining
-    let amortPeriodsRemaining = mortgage.amortizationTerm - monthDiff(startDate, today);
+    let amortPeriodsRemaining = amortizationTerm - monthDiff(startDate, today);
     // Ensure amortPeriodsRemaining is not negative
     amortPeriodsRemaining = amortPeriodsRemaining <= 0 ? 0 : amortPeriodsRemaining;
 
     // Calculate the current rate used to determine payments
-    if (mortgage.interestTypeDd == 'Fixed'){
-        currentMortageRate = mortgage.requestedRate;
+    if (interestType == 'Fixed'){
+        currentMortageRate = currentMortgageRate;
     } else {
-        currentMortageRate = marketPrime - mortgage.rate.discount + mortgage.rate.premium;
+        currentMortageRate = marketPrime - rateDiscount + ratePremium;
     }
 
     // Get loan payment details for current Mortgage
     const currentMortgage = loanPaymentDetails(
-        mortgage.balanceRemaining,
+        balanceRemaining,
         currentMortageRate / 100,
         amortPeriodsRemaining,
         currentPeriodsRemaining
     );
-    currentMortgage.type = mortgage.interestTypeDd;
-    //currentMortgage.amortization = {remainingYears: Math.round(amortPeriodsRemaining/12 * 10)/10,
-   //                                 remainingPeriods: amortPeriodsRemaining};
-   // currentMortgage.remaining = {remainingYears: Math.round(currentPeriodsRemaining/12 * 10)/10,
-   //                                 remainingPeriods: currentPeriodsRemaining};
+    currentMortgage.type = interestType;
+                            remainingPeriods: currentPeriodsRemaining};
 
     const estBreakFees = calculateBreakFees(
-        mortgage.balanceRemaining,
+        balanceRemaining,
         currentPeriodsRemaining,
         currentMortageRate / 100, // <-- Change here
         marketRateLender / 100
@@ -48,7 +61,7 @@ function mortgageComparison(mortgage, marketRates, marketPrime, marketRateLender
     //Run through each of the market rates and calculate the mortgage details
     const marketMortgages = marketRates.map(rateObj => {
         const marketLoanDetails = loanPaymentDetails(
-            mortgage.balanceRemaining,
+            balanceRemaining,
             rateObj.Rate/100,
             amortPeriodsRemaining,
             rateObj.termYears * 12, currentPeriodsRemaining,
@@ -193,9 +206,9 @@ function monthDiff(d1, d2) {
     return months <= 0 ? 0 : months;
   }
 
-mortgageDetails = JSON.parse(p1);
+existingMortgage = JSON.parse(p1);
 marketRates = JSON.parse(p2);
 marketRateLender = 6.5 // p3/100;
 marketPrime = p3; //6.5;
 
-return JSON.stringify(mortgageComparison(mortgageDetails, marketRates, marketPrime, marketRateLender)).slice(1, -1).replace(/\\/g, "");
+return JSON.stringify(mortgageComparison(currentMortgageDetails, marketRates, marketPrime, marketRateLender)).slice(1, -1).replace(/\\/g, "");
