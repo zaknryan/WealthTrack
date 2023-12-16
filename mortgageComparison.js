@@ -61,15 +61,22 @@ function mortgageComparison(existingMortgage, marketRates, marketPrime, marketRa
         );
 
         let ix = Math.min(marketLoanDetails.cumulative.InterestPayments.length, currentMortgage.cumulative.InterestPayments.length) - 1;
+
+        const interestSavings = currentMortgage.cumulative.InterestPayments[ix] - marketLoanDetails.cumulative.InterestPayments[ix];           //Interest savings from moving to this mortgage
+        const principalPaymentInc = marketLoanDetails.cumulative.PrincipalPayments[ix] - currentMortgage.cumulative.PrincipalPayments[ix];     //Incremental monthly principal payment
+        const principalDiff = marketLoanDetails.cumulative.endingPrincipal[ix] - currentMortgage.cumulative.endingPrincipal[ix];                         //Difference in remaining principal at the end of the current mortgage
+
+        //delete the cumulative portion of the JSON output to save space
+        delete marketLoanDetails['cumulative']
     
         return {
             ...rateObj, 
             ...marketLoanDetails,
             //remaining: {remainingYears: marketLoanDetails.termYears, 
             //                remainingPeriods: marketLoanDetails.termYears * 12},
-            interestSavings: currentMortgage.cumulative.InterestPayments[ix] - marketLoanDetails.cumulative.InterestPayments[ix],           //Interest savings from moving to this mortgage
-            principalPaymentInc: marketLoanDetails.cumulative.PrincipalPayments[ix] - currentMortgage.cumulative.PrincipalPayments[ix],     //Incremental monthly principal payment
-            principalDiff: marketLoanDetails.cumulative.endingPrincipal[ix] - currentMortgage.cumulative.endingPrincipal[ix],                         //Difference in remaining principal at the end of the current mortgage
+            interestSavings: interestSavings,           //Interest savings from moving to this mortgage
+            principalPaymentInc: principalPaymentInc,     //Incremental monthly principal payment
+            principalDiff: principalDiff,                         //Difference in remaining principal at the end of the current mortgage
             paymentDelta: marketLoanDetails.monthlyPayment - currentMortgage.monthlyPayment,                             //Change in monthly payment (+ive means paying more)
             compare_periods: ix + 1
         };
@@ -77,6 +84,9 @@ function mortgageComparison(existingMortgage, marketRates, marketPrime, marketRa
 
     //Find which mortgage has the lowest totalPayments
     lowest = getIndexesOfMinValues(marketMortgages, ['totalPayments','totalInterestPayments','endingPrincipal','monthlyPayment'])
+
+    //delete the cumulative portion of the JSON output to save space
+    delete currentMortgage['cumulative'];
 
     const output = {
         currentMortgage: currentMortgage,
