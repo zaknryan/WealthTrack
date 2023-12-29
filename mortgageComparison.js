@@ -1,4 +1,5 @@
 function mortgageComparison(existingMortgage, marketRates, marketPrime, marketRateLender = marketPrime) {
+
     // Set variables from properties in currentMortgage
     const {
         amortizationTerm,
@@ -259,7 +260,7 @@ try {
     existingMortgage = p1 ? JSON.parse(p1) : undefined;
     marketRates = p2 ? JSON.parse(p2) : undefined;
     marketPrime = p3 ? parseFloat(p3) : 6.5; // Assuming p3 is a number in string format.
-    marketRateLender = marketPrime; // Use marketPrime as the default if p3 is defined.
+    marketRateLender = marketPrime*100; // Use marketPrime as the default if p3 is defined.
 } catch (error) {
     console.error("Error parsing JSON input:", error);
     // Handle the error appropriately, perhaps by returning a message or setting default values.
